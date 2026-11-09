@@ -125,7 +125,7 @@ cp .env.example .env          # pon tu API key, o usa Ollama en local
 python -m src.db              # crea la base e indexa el manual
 python -m src.cli "¿ya me toca cambio de aceite?"
 python -m src.cli             # modo conversación
-pytest -q                     # 12 pruebas
+pytest -q                     # 18 pruebas (guardrails, dominio y servidor MCP)
 ```
 
 Funciona con la API de Anthropic o con Ollama en local (`PROVEEDOR=ollama`), y

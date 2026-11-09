@@ -32,7 +32,10 @@ CREATE VIRTUAL TABLE IF NOT EXISTS manual USING fts5(
 
 
 def conectar(ruta: Path | str = RUTA_DB) -> sqlite3.Connection:
-    con = sqlite3.connect(ruta)
+    # check_same_thread=False porque el servidor MCP atiende cada herramienta en
+    # un hilo de trabajo distinto al que abrió la conexión. Las escrituras van
+    # serializadas con un lock en src/mcp_server.py.
+    con = sqlite3.connect(ruta, check_same_thread=False)
     con.row_factory = sqlite3.Row
     return con
 
