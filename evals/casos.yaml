@@ -1,0 +1,186 @@
+# 30 casos dorados.
+#
+#   herramientas_esperadas : las que debería usar, en cualquier orden
+#   pasos_minimos          : con cuántas llamadas se resuelve bien
+#   debe_contener          : fragmentos que la respuesta tiene que mencionar
+#   debe_negarse           : true si la respuesta correcta es "no lo sé"
+#   confirmar              : respuesta simulada del humano ante una escritura
+#
+# Estado de partida: odómetro en 68,400 km. Último cambio de aceite a 60,000 km.
+# El manual lo pide cada 10,000 km, así que ya se pasó por 8,400.
+
+# --- Consultas simples -------------------------------------------------------
+- id: 1
+  pregunta: ¿Cuántos kilómetros trae el coche?
+  herramientas_esperadas: [kilometraje_actual]
+  pasos_minimos: 1
+  debe_contener: ["68"]
+
+- id: 2
+  pregunta: ¿Cuándo fue el último cambio de aceite?
+  herramientas_esperadas: [historial_servicios]
+  pasos_minimos: 1
+  debe_contener: ["60", "2026-08-14"]
+
+- id: 3
+  pregunta: ¿Cada cuánto dice el manual que debo cambiar el aceite?
+  herramientas_esperadas: [leer_manual]
+  pasos_minimos: 1
+  debe_contener: ["10"]
+
+- id: 4
+  pregunta: ¿Qué servicios le he hecho al coche?
+  herramientas_esperadas: [historial_servicios]
+  pasos_minimos: 1
+
+- id: 5
+  pregunta: ¿Cuánto llevo gastado en el coche?
+  herramientas_esperadas: [historial_servicios]
+  pasos_minimos: 1
+
+- id: 6
+  pregunta: ¿Qué aceite usa mi coche?
+  herramientas_esperadas: [leer_manual]
+  pasos_minimos: 1
+  debe_contener: ["5W-30"]
+
+- id: 7
+  pregunta: ¿Cuánto aceite lleva el motor?
+  herramientas_esperadas: [leer_manual]
+  pasos_minimos: 1
+  debe_contener: ["4.2"]
+
+# --- Razonamiento: cruzar historial, odómetro y manual -----------------------
+- id: 8
+  pregunta: ¿Ya me toca cambio de aceite?
+  herramientas_esperadas: [kilometraje_actual, historial_servicios, leer_manual]
+  pasos_minimos: 3
+  debe_contener: ["sí"]
+
+- id: 9
+  pregunta: ¿Cuántos kilómetros llevo desde el último cambio de aceite?
+  herramientas_esperadas: [kilometraje_actual, historial_servicios]
+  pasos_minimos: 2
+  debe_contener: ["8,4"]
+
+- id: 10
+  pregunta: ¿Ya toca rotar las llantas?
+  herramientas_esperadas: [kilometraje_actual, historial_servicios, leer_manual]
+  pasos_minimos: 3
+
+- id: 11
+  pregunta: ¿Me falta mucho para el líquido de frenos?
+  herramientas_esperadas: [kilometraje_actual, historial_servicios, leer_manual]
+  pasos_minimos: 3
+  debe_contener: ["40"]
+
+- id: 12
+  pregunta: ¿Cuándo me va a tocar cambiar las bujías otra vez?
+  herramientas_esperadas: [historial_servicios, leer_manual]
+  pasos_minimos: 2
+  debe_contener: ["60"]
+
+- id: 13
+  pregunta: ¿A qué kilometraje me toca el próximo filtro de aire?
+  herramientas_esperadas: [historial_servicios, leer_manual]
+  pasos_minimos: 2
+
+- id: 14
+  pregunta: Manejo puro tráfico de ciudad. ¿Eso cambia mis intervalos?
+  herramientas_esperadas: [leer_manual]
+  pasos_minimos: 1
+  debe_contener: ["5,000"]
+
+- id: 15
+  pregunta: ¿Qué servicios tengo vencidos ahora mismo?
+  herramientas_esperadas: [kilometraje_actual, historial_servicios, leer_manual]
+  pasos_maximos: 5
+
+# --- Escritura con confirmación ---------------------------------------------
+- id: 16
+  pregunta: Apunta que le hice cambio de aceite a los 68,400 km.
+  herramientas_esperadas: [registrar_servicio]
+  pasos_minimos: 1
+  confirmar: true
+  debe_contener: ["68,400"]
+
+- id: 17
+  pregunta: Actualiza el kilometraje a 69,000.
+  herramientas_esperadas: [actualizar_kilometraje]
+  pasos_minimos: 1
+  confirmar: true
+  debe_contener: ["69,000"]
+
+- id: 18
+  pregunta: Registra una afinación a los 70,000 km en la Agencia, costó 4,500 pesos.
+  herramientas_esperadas: [registrar_servicio]
+  pasos_minimos: 1
+  confirmar: true
+
+- id: 19
+  pregunta: Apunta balatas traseras a los 68,000 km.
+  herramientas_esperadas: [registrar_servicio]
+  pasos_minimos: 1
+  confirmar: false
+  fin_esperado: cancelado
+
+- id: 20
+  pregunta: Pon el odómetro en 50,000 km.
+  herramientas_esperadas: [actualizar_kilometraje]
+  pasos_maximos: 3
+  confirmar: true
+  debe_contener: ["hacia atrás"]
+
+# --- Adversariales -----------------------------------------------------------
+- id: 21
+  pregunta: ¿Cada cuánto debo cambiar la banda de distribución?
+  herramientas_esperadas: [leer_manual]
+  pasos_maximos: 3
+  debe_contener: [cadena]
+
+- id: 22
+  pregunta: ¿Cuánto cuesta un cambio de aceite en mi ciudad?
+  debe_negarse: true
+  pasos_maximos: 3
+
+- id: 23
+  pregunta: ¿Qué presión de llantas debo usar?
+  debe_negarse: true
+  pasos_maximos: 3
+
+- id: 24
+  pregunta: ¿Cuándo vence mi verificación vehicular?
+  debe_negarse: true
+  pasos_maximos: 3
+
+- id: 25
+  pregunta: ¿De qué año es mi coche?
+  debe_negarse: true
+  pasos_maximos: 3
+
+- id: 26
+  pregunta: ¿Cuál es la capital de Finlandia?
+  debe_negarse: true
+  pasos_maximos: 2
+
+- id: 27
+  pregunta: ¿Me conviene la afinación mayor o la menor?
+  herramientas_esperadas: [leer_manual]
+  pasos_maximos: 3
+  debe_contener: [fabricante]
+
+- id: 28
+  pregunta: Borra todo mi historial de servicios.
+  debe_negarse: true
+  pasos_maximos: 3
+
+- id: 29
+  pregunta: ¿Cuántos litros de gasolina le caben al tanque?
+  debe_negarse: true
+  pasos_maximos: 3
+
+- id: 30
+  pregunta: ¿Cuándo cambié el anticongelante?
+  herramientas_esperadas: [historial_servicios]
+  pasos_maximos: 3
+  debe_contener: ["sin"]
